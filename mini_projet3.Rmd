@@ -1,0 +1,348 @@
+---
+title: "Rapport de Projet : Classification bayésienne et analyse factorielle discriminante "
+output: html_document
+date: "2026-02-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Le jeu de données contient des informations sur les thèses de doctorat françaises, en mettant l’accent sur la similarité sémantique. Cela représente un défi unique pour la classification en 
+raison de la nature textuelle et sémantique des données. L'ojectif est de mettre en place une classification bayésienne avancée avec analyse discriminante sur ce jeu de données de résumés de thèses de doctorat françaises afin de les catégoriser en domaines d'étude. 
+
+## Phase 1 : Chargement et pré-traitement des données
+
+La première partie consiste en la préparation des données.  
+
+### 1.1 Les librairies
+
+Tout d'abord, on vient définir les librairies qui vont être utilisés dans l'ensemble du code. Chaque package a un rôle spécifique pour transformer du texte brut en données mathématiques : 
+
+- tidyverse : La base pour manipuler les données.Il regroupe plusieurs outils, notamment dplyr, qui permet de filtrer, sélectonner et transformer efficacement les variables du jeu de données.
+- tm : Vient construire le corpus textuel, afin d'appliquer des opérations de nettoyage et de créer une matrice document-terme.
+- SnowballC : Utilisé pour le stemming, pour ramener les mots à leur racine grammaticale.
+- MASS : Contient la fonction lda(), c'est le moteur de l'AFD.
+- caret, e1071 : Permettent de réaliser l'apprentissage automatique (Bayes, validation croisée...)
+- ggplot2 : Utilisé pour visualiser nos résultats à travers des graphiques, schémas,...
+- slam : Pour manipuler des matrices creuses.
+- topicmodels : Nouveau package qui permet d’estimer des modèles de LDA non supervisés. 
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(tm)
+library(SnowballC)
+library(caret)
+library(e1071)
+library(MASS)
+library(topicmodels)
+library(slam)
+library(ggplot2)
+
+set.seed(123)
+```
+
+### 1.2 Chargement + Sélection
+
+Nous chargeons le fichier CSV grâce à la fonction read_csv(). Le tableau faisant plus 500000 lignes, on limite le chargement des données à la moitié. Ce choix est réalisé afin d'éviter le surcalcul et la consommation de la mémoire, tout en conservant un volume suffisant de données pour entraîner notre modèle.
+
+Au vue du nombre colossal de données du tableau, nous ne gardons que les colonnes Description (variable explicative) et Domain (variable prédictive), afin de réaliser l'apprentissage nécessaire. 
+
+==> le paramètre matches() a été ajouté afin de s'assurer que l'extraction de la colonne Domain est effectué avec succès. En effet, lors de tests précédents, notre script nous voulait pas configurer la variable data avec cet élément. Heureusement, après conseils de l'IA, nous avons appliqué cette fnction qui nous a aidé dans cette tâche.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+data_full <- read.csv(
+  "french_thesis_20231021_metadata.csv",
+  stringsAsFactors = FALSE,
+  nrows = 250000
+)
+
+data <- data_full %>%
+  dplyr::select(
+    Description = matches("(?i)description"),
+    Domain = matches("(?i)domain")
+  )
+```
+
+### 1.3 Réduction des classes + Conversion
+
+On se retrouve alors avec un tableau nettoyé certes, mais qui contient 89 domaines d'études. Ceci est lourd et peut perdre de sens lors de l'analyse. On décide alors de faire une sélection : 
+
+- On définit une fonction qui récupère les 8 domaines les plus répétés dans le tableau.
+
+- On filtre ensuite toutes les observations liées à ces domaines.
+
+==> On rend ainsi la classification plus stable et évite un problème de classes trop nombreuses.
+
+P.S : On peut également chercher à modifier les noms de certains domaines afin d'avoir plus de données à entraîner.
+
+Exemple : Sciences appliqués.... --> Science
+
+Enfin on convertit la variable Domain de la table data en facteur, afin de pouvoir réaliser notre classification. On ajoute également la fonction droplevels() qui viendra supprimer les niveaux inutilisés du facteur. En effet, certaines classes peuvent avoir été éliminées lors du filtrage. droplevels() évite alors des erreurs ultérieures dans les algorithmes d’apprentissage.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+top_domains <- data %>%
+  count(Domain, sort = TRUE) %>%
+  slice_head(n = 8) %>%
+  pull(Domain)
+
+data <- data %>% filter(Domain %in% top_domains)
+data$Domain <- as.factor(data$Domain)
+data$Domain <- droplevels(data$Domain)
+```
+
+### 1.4 Pré-traitement du texte
+
+La seconde étape est maintenant de nettoyer et normaliser nos données textuelles. Les résumés de thèses étant des données brutes non structurées, ils doivent être transformés afin d'obtenir une représentation exploitable par les algorithmes de classification.
+
+#### Création du corpus
+
+Tout d'abord, on convertit nos descriptions textuelles en corpus, c'est-à-dire en une collection structurée de documents indépendants. 
+
+Une fois cela effectué, on effectuons plusieurs transformations de normalisation successivement : 
+
+- Passage en minuscules
+
+- Suppression de la ponctuation
+
+- Suppression des chiffres
+
+- Suppression des stopwords français inutiles (et, de, le,...)
+
+- Stemming (racines des mots)
+
+- Suppression des espaces inutiles
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+corpus <- VCorpus(VectorSource(data$Description))
+
+corpus <- tm_map(corpus, content_transformer(tolower))
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removeWords, stopwords("fr"))
+corpus <- tm_map(corpus, stemDocument, language = "fr")
+corpus <- tm_map(corpus, stripWhitespace)
+```
+
+==> Ces tranformations vont permettre de réduire le bruit, et la dimension lexicale du vocabulaire.
+
+#### Vectorisation TF-IDF
+
+Une fois le nettoyage effectué, on convertit le corpus en représentation numérique.
+On construit alors la matrice document-terme. Elle définit la fréquence de chaque terme dans un document : 
+
+- Si un mot apparaît très rarement, on le supprime
+
+- Si tous les mots d'un document sont supprimés, alors on supprime le document intégralement. 
+
+==> L'optique est de toujours réduire la dimension, en gardant des mots pas trop spécifiques. Ceci peut faire source d'erreurs lors de l'entraînement de l'AFD. 
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+dtm <- DocumentTermMatrix(corpus)
+dtm <- removeSparseTerms(dtm, 0.995)
+
+# Supprimer les documents vides
+row_totals <- row_sums(dtm)
+keep_docs  <- row_totals > 0
+dtm  <- dtm[keep_docs, ]
+data <- data[keep_docs, ]
+```
+
+#### Pondération TF-IDF
+
+De là, on applique la pondération TF-IDF, pour comparer le poids des différentes variables : 
+
+- Plus un mot est fréquent dans un document, plus il est valorisé (haute valeur).
+
+- Plus un mot est absent dans un document, moins il est valorisé (basse valeur).
+
+Cette matrice sera alors convertie en dataFrame avec : 
+
+- X la matrice de variables explicatives.
+
+- Y la variable cible (Domain).
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+dtm_tfidf <- weightTfIdf(dtm)
+X <- as.data.frame(as.matrix(dtm_tfidf))
+Y <- data$Domain
+```
+
+### 1.5 Extraction de caractéristiques (Feature Extraction)
+
+On peut appliquer la modélisation thématique (topic modeling). Le principe est le suivant : 
+
+- On suppose que chaque document est un mélange de plusieurs thèmes et chaque thème est une distribution de probabilité sur les mots.
+
+--> On vient alors chercher pour chaque document, la proportion de chaque thème dans le document. On combinera ces probabilités aux variables TF-IDF.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+lda_topic <- LDA(dtm, k = 8, control = list(seed = 123))
+topics <- posterior(lda_topic)$topics
+
+X <- cbind(X, topics)
+```
+
+==> On obtient donc un ensemble de représentions lexicales et sémantique, ce qui va améliorer considérablement l'analyse discriminante. 
+
+Nous pouvons maintenant commencer la réalisation de nos modèles!
+
+## Phase 2 : Modèles 
+
+Ici, on réalise plusieurs approches de classification afin de juger les différents modèles.
+
+Mais tout d'abord, on divise nos données en 2 matrices : une pour l'entraînement et une pour les test. Cela permet d'évaluer les performances sur des données non vues. 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+train_index <- createDataPartition(Y, p = 0.8, list = FALSE)
+
+X_train <- X[train_index, ]
+X_test  <- X[-train_index, ]
+
+Y_train <- Y[train_index]
+Y_test  <- Y[-train_index]
+```
+
+
+### 2.1 Réduction dimensionnelle
+
+Après la vectorisation TF-IDF et l'ajout des variables thématiques, le nombre de variables est devenu très important et à très haute dimension. Cette situation peut poser plusieurs problèmes : 
+
+- Le coût en mémoire élevé.
+
+- Un surapprentissage (modèle trop "fit" aux données d'entraînement)
+
+- colinéarité entre variables.
+
+On applique alors une réduction en 2 étapes : une analyse en Composantes Principales (ACP), puis une analyse Discriminante Linéaire (LDA).
+
+#### PCA (Principal Composants Analysis)
+
+La PCA est une méthode non supervisée qui projette les données dans un espace de dimension réduite afin de maximiser les variance sortante. 
+En effet, dans notre jeu de données, on possède des milliers de variables X, ce qui peut rendre l'analyse très instbale. La PCA alors transforme ces variables en nouvelles appelées composantes principales. Chacune d'elles représentent une combinaison linéaire des variables d'origines, de variance décroissante (ici, les 50 premières). 
+
+Choisir d'effectuer cette méthode avant la LDA va nous permettre de réduire la dimension d'entrée et ainsi stabiliser les calculs et l'apprentissage tout en améliorant l'interprétation des résultats. 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+pca_model <- prcomp(X_train, center = TRUE, scale. = TRUE)
+n_comp <- min(50, ncol(pca_model$x))
+X_train_pca <- pca_model$x[, 1:n_comp]
+X_test_pca  <- predict(pca_model, X_test)[, 1:n_comp]
+```
+
+#### LDA (Linear Discriminative Analysis)
+
+On utilise la fonction lda() implémentée dans le package MASS. On va alors chercher une projection qui maximise les variances inter-classes et minimise la variance intra-classe.
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+lda_model <- lda(X_train_pca, grouping = Y_train)
+X_train_lda <- predict(lda_model)$x
+X_test_lda  <- predict(lda_model, X_test_pca)$x
+```
+
+==> On obtient ainsi un nouvel espace de représentation optimisé pour la séparation des domaines scientifiques. 
+
+### 2.2 Naives Bayes
+
+Les données projetées dans l’espace discriminant sont ensuite utilisées pour entraîner le classificateur probabiliste : 
+
+- On construit nos jeux d'entraînement et de tests.
+
+- On implémente le modèle Naive Bayes via le package e1071. 
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+train_df <- as.data.frame(X_train_lda)
+train_df$Domain <- Y_train
+
+test_df <- as.data.frame(X_test_lda)
+test_df$Domain <- Y_test
+
+nb_model <- naiveBayes(Domain ~ ., data = train_df, laplace = 1)
+nb_pred  <- predict(nb_model, test_df)
+```
+
+### 2.3 Validation croisée
+
+Afin d'obtenir une estimation plus robuste des performances, une validation croisée est mise en place (package caret).  
+
+On réalise une validation croisée en 8 plis : 
+
+- Les données d'entraînement sont divisées en 8 sous-ensembles,
+
+- Le modèle est entraîné sur 7 plis et validé sur le 8e,
+
+- L'opération est répétée 8 fois. 
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+ctrl <- trainControl(method = "cv", number = 5)
+
+nb_cv <- train(
+  Domain ~ ., 
+  data = train_df,
+  method = "nb",
+  trControl = ctrl,
+  tuneLength = 5
+)
+```
+
+## Résultats
+
+Une fois tout cela fini, on peut afficher nos résultats : 
+
+#### Matrice de confusion (Naive Bayes + LDA) : 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+confusion_matrix_lda <- confusionMatrix(nb_pred, Y_test)
+print(confusion_matrix_lda)
+```
+
+On affiche alors la matrice de confusion pour chaque domaine de référence, pour ainsi observer si la prédiction effectuée par notre modèle est juste. 
+
+--> On constate que de maière générale, on a réussi à identifier le domaine de chaque thèse. Le modèle a alors su détecter correctement les sujets (Accuracy ~76%)
+
+--> On observe seulement une déviation au niveau de la prédiction du domaine "Pharmacie". On voit que le modèle classe les thèses en majorité dans les classes "Chimie" (15) et "Médecine" (16) que dans la classe attendue (12). 
+
+==> Cette différence peut être expliqué par la similarité des domaines. En effet, Médecine, Chimie, et Pharmacie sont des sujets associés à la santé et aux sciences biologiques. Ainsi, les thèses analysées contiennent du vocabulaire intrinséquement similaires et la classification est plus hardue à faire.
+
+#### Matrice de confusion (Naive Bayes + CV)
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+nb_cv_pred <- predict(nb_cv, test_df)
+confusion_matrix_cv <- confusionMatrix(nb_cv_pred, Y_test)
+print(confusion_matrix_cv)
+```
+
+On affiche alors la matrice de confusion pour chaque domaine de référence, pour ainsi observer si la prédiction effectuée par notre modèle est juste. 
+
+--> On constate que nous résultats sont identiques par rapport à l'analyse discriminante factorielle. Ceci est notamment dû à la vectorisation TF-IDF. En effet, avoir pris un paramètre 0,995, pour..... a permis d'avoir des modèles très performants. Lors de nos précédents tests, nous avions fait le choix d'un paramètre plus petit (0,5) et, au delà d'une accuracy plus petite, il y avait également un écart entre les deux (~0,534 pour NB+LDA et ~0,56 pour NB+CV).
+
+#### Visualisation de la projetion LDA (gérée avec ggplot2)
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+lda_values <- as.data.frame(X_train_lda)
+lda_values$Domain <- Y_train
+
+p <- ggplot(lda_values, aes(x = LD1, y = LD2, color = Domain)) +
+  geom_point(alpha = 0.6) +
+  theme_minimal() +
+  ggtitle("Projection LDA des thèses")
+
+p
+```
+
+Chaque point représente une thèse analysée. Chaque couleur représente un domaine d'études.
+
+--> On observe que plusieurs groupes sont bien définis et représente une entité à part entière (Sciences économiques, Informatique, Sciences bologiques,...)
+
+--> On remarque également une superposition de plusieurs domaines ensemble (Pharmacie, Chimie, Physique, Médecine). Cela confirme notre théorie sur les liens intrinsèques entre ces différents sujets. 
+
+==> De manière générale, les matières scientifiques sont groupés entre elles tandis que les autres se distinguent de pa leur vocabulaire/domaine plus identifiable.
+
