@@ -4,83 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Portfolio | GitHub Pages</title>
+
     <style>
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
+            margin: 0;
             background-color: #f4f7f6;
         }
 
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        /* HEADER */
         header {
             text-align: center;
-            padding: 3rem 0;
-            background: #dbdeea;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #dbdeea, #c3c8e8);
             color: black;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 3rem;
+        }
+
+        header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* SECTIONS */
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
         }
 
         section {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        h1 { margin: 0; font-size: 2.5rem; }
-        
+        section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        /* BUTTON */
         .button {
             display: inline-block;
+            margin-top: 1rem;
             background: #dbdeea;
             color: black;
             padding: 10px 20px;
             text-decoration: none;
-            border-radius: 5px;
-            transition: transform 0.2s;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-        .btn:hover { transform: translateY(-2px); }
+        .button:hover {
+            background: #c3c8e8;
+            transform: translateY(-3px);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            background: #dbdeea;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 3rem 1rem;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
     </style>
 </head>
+
 <body>
+
+<div class="container">
 
     <header>
         <h1>Mini site Projets</h1>
-        <p>Ceci est une page Web regroupant l'ensemble des TDs, mini-projets et le projet final sous programmation R</p>
+        <p>Ceci est une page Web regroupant l'ensemble des TDs, mini-projets et le projet final en programmation R</p>
     </header>
 
-    <section>
-        <h2>TDs</h2>
-        <p><strong>Ensemble des TDs 1, 2, 3, 4</p>
-        
-        <a href="https://github.com/votre-pseudo" class="button">Accéder</a>
-    </section>
+    <div class="sections">
 
-    <section>
-        <h2>Mini Projet 1</h2>
-        <p><strong>Classification bayésienne des sentiments</strong></p>
-        
-        <a href="https://github.com/votre-pseudo" class="button">Accéder</a>
-    </section>
+        <section>
+            <h2>TDs</h2>
+            <p><strong>Ensemble des TDs 1, 2, 3, 4</strong></p>
+            <a href="https://github.com/votre-pseudo" class="button">Accéder</a>
+        </section>
 
-    <section>
-        <h2>Mini projet 2</h2>
-        <p><strong>Analyse factorielle discriminante des émotions de Twitter</strong></p>
-        
-        <a href="mini_projet2.html" class="button">Accéder</a>
-    </section>
+        <section>
+            <h2>Mini Projet 1</h2>
+            <p>Classification bayésienne des sentiments</p>
+            <a href="https://github.com/votre-pseudo" class="button">Accéder</a>
+        </section>
 
-    <section>
-        <h2>Mini projet 3</h2>
-        <p><strong>Classification bayésienne et analyse factorielle discriminante de thèses</strong></p>
-        
-        <a href="mini_projet3.html" class="button">Accéder</a>
-    </section>
+        <section>
+            <h2>Mini Projet 2</h2>
+            <p>Analyse factorielle discriminante des émotions de Twitter</p>
+            <a href="mini_projet2.html" class="button">Accéder</a>
+        </section>
+
+        <section>
+            <h2>Mini Projet 3</h2>
+            <p>Classification bayésienne et analyse factorielle discriminante de thèses</p>
+            <a href="mini_projet3.html" class="button">Accéder</a>
+        </section>
+
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 - Votre Nom | Portfolio académique | Hébergé sur GitHub Pages</p>
+</footer>
 
 </body>
 </html>
+
