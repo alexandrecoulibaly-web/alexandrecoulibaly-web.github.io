@@ -13,14 +13,11 @@
             background-color: #f4f7f6;
             color: #333;
         }
-
         .container {
             max-width: 1200px;
             margin: auto;
             padding: 2rem;
         }
-
-        /* HEADER */
         header {
             text-align: center;
             padding: 4rem 2rem;
@@ -29,25 +26,20 @@
             margin-bottom: 3rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-
         h1 {
             margin: 0;
             font-size: 3rem;
         }
-
         header p {
             margin-top: 1rem;
             opacity: 0.8;
         }
-
-        /* GRID 2x2 */
         .sections-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
             margin-bottom: 3rem;
         }
-
         section {
             background: white;
             padding: 1.8rem;
@@ -55,17 +47,13 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             transition: transform 0.3s, box-shadow 0.3s;
         }
-
         section:hover {
             transform: translateY(-8px);
             box-shadow: 0 12px 25px rgba(0,0,0,0.1);
         }
-
         h2 {
             margin-top: 0;
         }
-
-        /* LONG SECTION */
         .long-section {
             background: white;
             padding: 3rem;
@@ -73,19 +61,15 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.07);
             text-align: center;
         }
-
         .long-section h2 {
             font-size: 2rem;
             margin-bottom: 1rem;
         }
-
         .long-section p {
             max-width: 800px;
             margin: auto;
             opacity: 0.85;
         }
-
-        /* BUTTON */
         .button {
             display: inline-block;
             margin-top: 1rem;
@@ -97,24 +81,20 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-
         .button:hover {
             background: #c3c8e8;
             transform: translateY(-3px);
         }
-
-        /* FOOTER */
         footer {
             text-align: center;
             margin-top: 4rem;
             padding: 2rem;
-            background: #dbdeea;
+            background: white;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
             font-size: 0.9rem;
         }
 
-        /* RESPONSIVE */
         @media (max-width: 800px) {
             .sections-grid {
                 grid-template-columns: 1fr;
@@ -129,16 +109,19 @@
 <div class="container">
 
     <header>
-        <h1>Mini site Projets</h1>
-        <p>Ceci est une page Web regroupant l'ensemble des TDs, mini-projets et le projet final en programmation R</p>
+        <h1>Site Web hébergeur Projet 2025-26</h1>
+        <p>Ceci est une page Web regroupant l'ensemble des TDs, mini-projets et le projet final en programmation R.</p>
     </header>
 
     <div class="sections-grid">
 
         <section>
             <h2>TDs</h2>
-            <p><strong>Ensemble des TDs 1, 2, 3, 4</strong></p>
-            <a href="#" class="button">Accéder</a>
+            <p><strong>Ensemble des TDs</strong></p>
+            <a href="#" class="button">TD1</a>
+            <a href="#" class="button">TD2</a>
+            <a href="TD3.html" class="button">TD3</a>
+            <a href="TD4.html" class="button">TD4</a>
         </section>
 
         <section>
@@ -150,18 +133,17 @@
         <section>
             <h2>Mini Projet 2</h2>
             <p>Analyse factorielle discriminante des émotions de Twitter</p>
-            <a href="#" class="button">Accéder</a>
+            <a href="mini_projet2" class="button">Accéder</a>
         </section>
 
         <section>
             <h2>Mini Projet 3</h2>
             <p>Classification bayésienne et AFD de thèses</p>
-            <a href="#" class="button">Accéder</a>
+            <a href="mini_projet3" class="button">Accéder</a>
         </section>
 
     </div>
 
-    <!-- LONG SECTION -->
     <div class="long-section">
         <h2>Projet Final</h2>
         <p>
@@ -176,7 +158,7 @@
 </div>
 
 <footer>
-    <p>© 2026 - Votre Nom | Portfolio académique | Hébergé sur GitHub Pages</p>
+    <p>© 2026 - COULIBALY Alexandre / LOUBANE Assia | Portfolio académique Programmation R | Hébergé sur GitHub Pages</p>
 </footer>
 
 </body>
