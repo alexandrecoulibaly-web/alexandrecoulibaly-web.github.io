@@ -8,86 +8,30 @@
     <style>
 
         body {
-            font-family: "Times New Roman", Times, serif;
-            margin: 0;
-            background-color: #faf0e6;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+            color: #1f2937;
         }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 2rem;
-        }
+        
         header {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: #714329;
-            color: black;
-            border-radius: 20px;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        h1 {
-            margin: 0;
-            font-size: 3rem;
-        }
-        header p {
-            margin-top: 1rem;
-            opacity: 0.8;
-        }
-        .sections-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        section {
-            background: #B08463;
-            color: black;
-            padding: 1.8rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        section:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-top: 0;
-        }
-        .long-section {
-            background: #B08463;
-            color: black;
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
-            text-align: center;
-        }
-        .long-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        .long-section p {
-            max-width: 800px;
-            margin: auto;
-            opacity: 0.85;
-        }
-        .button {
-            display: inline-block;
-            margin-top: 1rem;
-            background: #D0B9A7;
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
             color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
         }
+        
+        section, .long-section {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .button {
+            background: #ec4899;
+            color: white;
+        }
+        
         .button:hover {
-            background: #c3c8e8;
-            transform: translateY(-3px);
+            background: #db2777;
         }
+
         footer {
             text-align: center;
             margin-top: 4rem;
