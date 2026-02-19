@@ -9,10 +9,9 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
             margin: 0;
             background-color: #f4f7f6;
+            color: #333;
         }
 
         .container {
@@ -26,7 +25,6 @@
             text-align: center;
             padding: 4rem 2rem;
             background: linear-gradient(135deg, #dbdeea, #c3c8e8);
-            color: black;
             border-radius: 20px;
             margin-bottom: 3rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -39,20 +37,20 @@
 
         header p {
             margin-top: 1rem;
-            font-size: 1.1rem;
             opacity: 0.8;
         }
 
-        /* SECTIONS */
-        .sections {
+        /* GRID 2x2 */
+        .sections-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         section {
             background: white;
-            padding: 1.5rem;
+            padding: 1.8rem;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             transition: transform 0.3s, box-shadow 0.3s;
@@ -65,6 +63,26 @@
 
         h2 {
             margin-top: 0;
+        }
+
+        /* LONG SECTION */
+        .long-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+
+        .long-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .long-section p {
+            max-width: 800px;
+            margin: auto;
+            opacity: 0.85;
         }
 
         /* BUTTON */
@@ -94,19 +112,12 @@
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
             font-size: 0.9rem;
-            color: #444;
         }
 
-        footer p {
-            margin: 0;
-        }
-
-        @media (max-width: 600px) {
-            header {
-                padding: 3rem 1rem;
-            }
-            h1 {
-                font-size: 2.2rem;
+        /* RESPONSIVE */
+        @media (max-width: 800px) {
+            .sections-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -122,32 +133,44 @@
         <p>Ceci est une page Web regroupant l'ensemble des TDs, mini-projets et le projet final en programmation R</p>
     </header>
 
-    <div class="sections">
+    <div class="sections-grid">
 
         <section>
             <h2>TDs</h2>
             <p><strong>Ensemble des TDs 1, 2, 3, 4</strong></p>
-            <a href="https://github.com/votre-pseudo" class="button">Accéder</a>
+            <a href="#" class="button">Accéder</a>
         </section>
 
         <section>
             <h2>Mini Projet 1</h2>
             <p>Classification bayésienne des sentiments</p>
-            <a href="https://github.com/votre-pseudo" class="button">Accéder</a>
+            <a href="#" class="button">Accéder</a>
         </section>
 
         <section>
             <h2>Mini Projet 2</h2>
             <p>Analyse factorielle discriminante des émotions de Twitter</p>
-            <a href="mini_projet2.html" class="button">Accéder</a>
+            <a href="#" class="button">Accéder</a>
         </section>
 
         <section>
             <h2>Mini Projet 3</h2>
-            <p>Classification bayésienne et analyse factorielle discriminante de thèses</p>
-            <a href="mini_projet3.html" class="button">Accéder</a>
+            <p>Classification bayésienne et AFD de thèses</p>
+            <a href="#" class="button">Accéder</a>
         </section>
 
+    </div>
+
+    <!-- LONG SECTION -->
+    <div class="long-section">
+        <h2>Projet Final</h2>
+        <p>
+            Cette section regroupe le projet final du semestre. 
+            Elle présente l'ensemble de l'approche méthodologique, 
+            les analyses statistiques réalisées sous R ainsi que 
+            l'interprétation des résultats obtenus.
+        </p>
+        <a href="#" class="button">Voir le projet</a>
     </div>
 
 </div>
@@ -158,4 +181,5 @@
 
 </body>
 </html>
+
 
