@@ -1588,7 +1588,7 @@ library(MASS)  </code></pre>
 <i>read_csv()</i>. On définit nos paramètres de tel sorte à ce que R ne
 convertit pas en catégorie et remplissent les case vides en NA pour
 <i>“Not available”</i>. On renomme également nos colonnes afin d’avoir
-une vision plus claire et lisible pour notre code.</p>
+une vision plus claire et lisible de notre code.</p>
 <pre class="r"><code>train &lt;- read.csv(&quot;twitter_training.csv&quot;, stringsAsFactors = FALSE, na.strings = c(&quot;&quot;, &quot;NA&quot;), fileEncoding = &quot;UTF-8&quot;)
 test  &lt;- read.csv(&quot;twitter_validation.csv&quot;, stringsAsFactors = FALSE, na.strings = c(&quot;&quot;, &quot;NA&quot;), fileEncoding = &quot;UTF-8&quot;)
 
@@ -1661,10 +1661,10 @@ validation</i>. On utilise la fonction <i>sapply()</i>. <br></p>
 les mots vides, certaines cases peuvent devenir totalement vides. Si
 vous les gardez, l’AFD plantera car elle ne peut pas analyser un tweet
 sans mots.</strong></i></p>
-<p>Une fois toutes étapes, on transforme la colonne <i>Sentiment</i> en
-<strong>catégories</strong> (Positive, Negative, etc.). C’est
-indispensable pour l’AFD car elle a besoin de savoir quelles sont les
-“classes” à séparer.</p>
+<p>Une fois toutes les étapes effectuées, on transforme la colonne
+<i>Sentiment</i> en <strong>catégories</strong> (Positive, Negative,
+etc.). C’est indispensable pour l’AFD car elle a besoin de savoir
+quelles sont les “classes” à séparer.</p>
 <pre class="r"><code>train$clean_tweet &lt;- sapply(train$Tweet, cleaning)
 test$clean_tweet  &lt;- sapply(test$Tweet, cleaning)
 
@@ -1745,9 +1745,9 @@ ou bien une explosion de la mémoire. </i></p>
 le vocabulaire)</h4>
 <p><strong>1.1.</strong> Lors des premiers tests, On observait que
 l’accuracy de notre code était très mauvaise (~20%). Cela signifie que
-notre modèle n’a pas pu correctement séparer nos sentiments dans
+notre modèle n’avait pas pu correctement séparer nos sentiments dans
 différentes classes.</p>
-<p>Un des raisons était lié à notre liste de vocabulaire : en effet,
+<p>Une des raisons était lié à notre liste de vocabulaire : en effet,
 elle retournait le tweet traité en une longue phrase de lettres collées
 les unes aux autres, ne facilitant la lecture de la sémantique. Nous
 avions alors modifié notre fonction “cleaning” afin de pouvoir garder
@@ -1762,8 +1762,8 @@ mots seuls, mais aussi les paires de <strong>mots (bigrammes,
 trigrammes,…)</strong>. En effet, dans l’analyse des sentiments, on peut
 avoir les mots individuels “not” et “good” côte à côte, mais considérés
 comme 2 mots distincts, ce qui fausse nos résultats.</p>
-<p>Ainsi on modifie notre paramètre <i>vocab</i>, et ainsi offrir plus
-de possibilités et combinaisons de champ lexicals. Encore une fois, ce
+<p>Ainsi on modifie notre paramètre <i>vocab</i> et ainsi, offrir plus
+de possibilités et combinaisons de champs lexicaux. Encore une fois, ce
 changement a permis une meilleure précision.</p>
 </div>
 </div>
@@ -1771,7 +1771,7 @@ changement a permis une meilleure précision.</p>
 <h3><span class="header-section-number">3.2</span> Création des matrices
 TF-IDF</h3>
 <p>Le texte est maintenant transformé en une matrice où chaque ligne est
-un tweet et chaque colonne est un mot du vocabulaire.</p>
+un tweet et chaque colonne est un mot de vocabulaire.</p>
 <p>On utilise <i>create_dtm</i> pour créer la Document-Term Matrix. De
 là, on applique la <strong>pondération TF-IDF</strong>. Donc :</p>
 <ul>
@@ -1999,7 +1999,7 @@ dans lequel il est écrit :</li>
 <li><p>Quelqu’un peut faire une critique d’un jeu mais pour autant ne
 pas être négatif (ex : critique constructive, avis nuancé),</p></li>
 <li><p>D’autres peuvent utiliser le sarcasme et la ponctuation pour
-exprimer leur avis, ce qui est difficilement identifiable pour les
+exprimer leur avis, ce qui est difficilement identifiable pour ces
 machines.</p></li>
 </ul>
 <p><strong>==&gt; Avoir plus de matière et de contexte, comme des avis
@@ -2024,7 +2024,7 @@ alternative nommée SVM ou <i>“Support Vector Machine”</i>. C’est un
 nouveau modèle qui est capable d’apprendre des notions non linéaires. Au
 delà de ça, elle peut gérer des données à dimension haute et creuses,
 qualité que ne possède pas LDA.</p>
-<p><strong>==&gt; Je pense alors de modifier notre approche de
+<p><strong>==&gt; Je pense alors que modifier notre approche de
 modélisation pourrait avoir un impact sur la qualité d’analyse du code à
 l’avenir. </strong></p>
 </div>
