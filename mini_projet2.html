@@ -1808,8 +1808,44 @@ recherches !</p>
 discriminante (AFD)</h2>
 <p><i><strong>C’est ici que l’Analyse Factorielle Discriminante
 commence. </strong></i></p>
-<div id="modèle-afd" class="section level3" number="4.1">
-<h3><span class="header-section-number">4.1</span> Modèle AFD</h3>
+<div id="principe" class="section level3" number="4.1">
+<h3><span class="header-section-number">4.1</span> Principe</h3>
+<p>L’analyse factorielle discriminante consiste à trouver une succession
+d’axes factoriels, tous orthogonaux entre eux et qui maximisent les
+projections des distances entre les groupes. Ces axes, appelés
+<strong>fonctions discriminantes</strong>, sont construits de manière à
+séparer au mieux les classes définies a priori. L’objectif est double
+:</p>
+<ul>
+<li><p><strong>Maximiser la variance inter‑groupes :</strong> les
+centres de gravité des groupes doivent être aussi éloignés que possible
+lorsqu’ils sont projetés sur les axes discriminants.</p></li>
+<li><p><strong>Minimiser la variance intra‑groupe :</strong> les
+individus appartenant à un même groupe doivent rester proches les uns
+des autres.</p></li>
+</ul>
+<p><img role="img" aria-label src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARwAAACCCAYAAACU73dnAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAxfSURBVHhe7d3tmaJIFwbg45sAbAS4EeBGABOBbgSSgU4EuhFIR9B2BNIRwEQARiBGAEZQ+8dTb1miAg012/Dc1+WPkR5kmOaxOPXBRAghCADAgP/pbwAA9AWBAwDGIHAAwBgEDgAYg8ABAGMQOABgDAIHAIxB4ACAMQgcADAGgQMAxiBwAMAYBA4AGIPAAQBjEDgAYAwCBwCMQeAAgDEIHAAwBoEDAMYgcADAGAQOABiDwAEAYxA4AGAMAgcAjEHgAIAxCBwAMAaBAwDGIHAAwBgEDgAYg8ABAGMQONCbMAwpz3P97U5st1vyfV9/+7fLsozCMNTfhisEDvQiCALa7/dk27a+qRNRFNF0OtXf/u2m0ynt93sKgkDfBAgc6EMQBBRFEUVR1HngZFlGSZLQ8XiUf/4vsW2b9vs9RVGE0KmAwIFOhWFIHx8flCRJLy2QLMtou90SXS/uqsDJ85wmk8nTl23btFgsernlm81mFEURfXx80H6/1zePmwDoSJqmgojEZrPRN3VqtVoJy7L0t2+kaSpWq5UgIuE4jojj+ObleZ4gImFZljidTvpf7wQfZ5qm+qbRQuBAJ4qiEI7jCMdx9E2dc11XzOdz/e07y+VSEJFYLpf6JnE6nQQRCSISu91O39wJPieu6+qbRgu3VNCJMAzpfD7L252+lGVJx+NR9lBV3VKxJEmIiF72ZnVdZ2K2bdN6vabj8dj7efkuJkIIob8J0ERZljSdTsm27V5qIqokSejHjx+UpiklSUJlWVZezHme059//klERKfT6a6etF6v6e3tjSzLojzPewsdPjd0Paa+Pue7QAsHviwMQ7pcLrRer/VNtXBv1mQyuevZiaKIfN+XQcYX73a7pSiKKsOGlNaN4zg3YVOWJYVhKMMmSRIZAk2Ooy5u5VwuF4zPIRSN4YuKohCWZQnLskRRFPrml7jOcTgcZCFXLeK6riuI6Gbfp9PpZSGW6zeWZQnP8+TLsixZ2Fb32eY46uJ60atC9xggcOBLdrudICKxWq30TbVsNhvheZ4QQsgw4Iu6KApBRK2Kro7jyGBRe6d2u50MyPf3d/nzfR0H4wBUP3OMEDjwJfzN/6rF8cj7+7tI01QcDgdBRPKi521twkztgarq8ub9qsfdx3GoeL91eteGDDUcaI17jOg62K2NIAhoNpvJmstisZDb+L2m+35Uv2FqrxXXZPo4DhV/5ufnp75pVBA40FoURURE5Hmevqkx3lfVhc7F2rIs5bZnXnWHq13peiB1eRwq27bJdV0i5TPGCIEDrfGF8+jCbuJ8Pt+0SPI8v3mvSQ/Rs8Apy1L2pnmed9dq6fI4dPxZCByAFp5d2E1ZlkXn81n+mUNhOp02uqXJskzuRx3zUpYl7fd7ms1mdD6fyfO8ygu/q+OowueJ9zNKelFnKNTC4aOX4zhit9u16uocO+65oZZdxTru7eLpEZ7nCdd1hWVZwnGcl707aiH42ct13adTGb56HM/wXDMa7mX30qBHGmdZRvv9Xg7yUr/R8jynMAzpeDyS67pPh8jDveQ64rfLc1eWJWVZRrZty1YED8xr26poo8/jmEwmRESUpumX9/Ut6Qk0NDz+oao7Uv3GieNY3wxPcEtA7T6G13gYweFw0DeNwuBrOHXrDG0LgWPVpqcG/l9X6qpV+N0MOnC4h4EeBI56i1W1/Tsry7LX4iTvW+9WhnrG+gU36MDhi8KyrMr7ZZ5Mt1wuf/uFs91u5Wp0vu/LHhVenW69XlNZlhQEgfy52XVlORXXHqbTKQVBQPZ1ZTv1G3W9XpPv+zcvuoau+qrzLfy7z9t3NdbAGXTROAgC+vj4oPl8Li9M/ubfbrd0PB5ptVq1msUbhmHj2woOgSpcxOYC93Q6lbOXF4sF/fr1ixzHkWGUZRn99ddfZFnWzXH4vk+/fv2i3W5H6/Waoiiiv//+mxzHkb/kWZZRlmVyFjOfn8ViQZ+fnzSfz8n3fRlYVfhzNpvNwxnbcG+73dI///xDnuf12gL9rxpFC+fz81O2Cv744w85jD2OYxk2vGyB3mLo0qOLl65hxMfCSxlMr2vMcAvEvi7QTdexIJ7n0eVyufnF9X2fHMeRLbrFYkGe59H5fL4ZR8JPVaDrecrznLIso+VySVEU0Xq9fnq8AK3oVeShUMfhvOqB4p4DMrAe7ytV4zQ2m42gismDvIzCo38fz47mmdNVP8fr/jbtceJ9fmVcyhjx/2WTcz0kg23h6N/6z+z3e/oOd5Z1WhxZlpHv+3IRqVd1mDAMyXEcIm3+0Ct1jqWK/vSEIbygvsEHTp2JhVUF5VeCILgrsr569V3ryPOcfKWGk+c57ff7p4VdngpgWRb9/PnzZUAxDpyxFj+hncEHzqvWTVuz2ewuUF692gRbE0mS0OVyIdd1Hy73OZlM5Lkpy5J836fNZiPrR4vFonExvInrGkyDekED+j3WEKgjiJuM6PzdNRz1uNUFrbjOslwub1ah00et8iJP6nKfcRzLffJ+8jwXh8NBzhHin+X9LZfLynqPiutHv/N8fUfz+XzUNZxBBQ4Pt6961fE7LyAuJqqvqvcevc+/wOpavhwo6nnhX3j1xctv6u8/Oxe8n2c/A/c4qPUOgLGodyWOxFAuoKIoZIioLaKq5Tbb4tCrmqPWF3Xd4e9q7C3DwdZwxozH7vi+L4u7PPq4K7yvPus9uiiK7v4N9vWxLuqL63bqqGz1xYVudXQ3v/och0XK+eJjHB09gcZotVrdjMXxPK/1ouBjwbdgJh59kqap/LzlcnnzfxPHsby9syxLxHEsW3JFUci6Ft/GqH+3KIqbWe+Hw6GTtX2e4WMZ6+8XAgdaURfg6vJWrcr7+/tN7UMfbKjWqKrwtqpC+Gaz+dLjX5pQ62RjhVsqaMW2bbIsi8jAWByeimJZFoVheDcf7dlwA56+QRVLQvB0ljZz6drgz+fF1McIgQOt8chkE5MQkyRpXPfgBdM5GPV603a7lbUuEziYTX3efxECZyCyLLubwZ4kyd1F1iUOHL3lUAfPhJ/UeI53eX3+FV+ozz5PbW2FYUiz2ayyBZTnOb29vT1s3TQ5vrr4uJtMIRkc/R4Lvp80TYXrusJxHLFcLuV7fRcnuY7TtHBcNHyON9c+0jQVu93urktZrSdxnYYn76ZpWtkV7Xne3X5Y0+Oro+25GhoEzgDM53MRx7GwLEsOKONCat+4h6jJiG51PE2d53hzeMzn84fjcPTAmc/n8lzwYEj+u3yuHgVG0+Org58qwV8IY4VbqgEIw5Bs26bL5SJvO6IoqjVx9av49qDJ+BVe+yeKIrpcLuR5nhwvxPtR6xzT6ZROpxNtt9ta9aIkSeQia1SxKmEQBPKcVWl6fHXwrVvTvzc4egLB98TzpBhdbyH6vKVijuM8bTE8wsesPieKWyN61/cr3BLhbm51nzwq2vM8sdvtardOujo+bqE5jqNvGh0EzkB4nidvA3iwWxzHRn7J+XahyUUolEW81PqI+t7pdKodYlxr4QfYqThweG5Z1XicKl0dH39+0/MzRAicgeDC6nw+ly0O13UfFka7VBSFsK5PpmxC/9bXWwKO49RuoXHgcNCq1AF3TeZ+dXF8bc/NUCFwBuR0Oon4OmGzuE7gNKXNtzjfBjF16YamrTMOnKqisho4TUZFd3F8fFvW5LwMGQIHOqOvr/NKl8/x5tpKVaBw4DRt7X31+HhoQpNW1dAN+jExYFae5zSbzWixWNxMKXim7Og53vzkCX2QHilTGNo8ieIrx+dfn+2V53njzx0qBA50ip+D9f7+Xnnxj0UYhvTz50+K4xhd4QoEDnRuvV7T29sbpWn6shUwREmS0I8fP0YfulUQONCLIAgoiiLKsuxu4N2Q8WN6qma1AwIHehSGIS0Wi1EFDj/BdNQTNJ9A4ACAMZhLBQDGIHAAwBgEDgAYg8ABAGMQOABgDAIHAIxB4ACAMQgcADAGgQMAxiBwAMAYBA4AGIPAAQBjEDgAYAwCBwCMQeAAgDEIHAAwBoEDAMYgcADAGAQOABiDwAEAYxA4AGAMAgcAjEHgAIAxCBwAMAaBAwDGIHAAwBgEDgAYg8ABAGMQOABgDAIHAIxB4ACAMQgcADAGgQMAxiBwAMAYBA4AGIPAAQBjEDgAYAwCBwCMQeAAgDEIHAAwBoEDAMYgcADAGAQOABiDwAEAYxA4AGAMAgcAjEHgAIAxCBwAMAaBAwDG/AvINsLOvGh8DgAAAABJRU5ErkJggg==" alt width="30%" style="display: block; margin: auto;" /></p>
+<p>où :</p>
+<ul>
+<li><p><strong>B</strong> est la matrice de dispersion
+inter‑groupes,</p></li>
+<li><p><strong>W</strong> est la matrice de dispersion
+intra‑groupe,</p></li>
+<li><p><strong>u</strong> est le vecteur discriminant
+recherché.</p></li>
+</ul>
+<p>Dans le cadre de ce projet, l’AFD va donc :</p>
+<ul>
+<li><p><strong>Réduire la dimensionnalité :</strong> le texte original
+transformé par TF-IDF va diminuer pour ne prendre que l’essentiel des
+messages.</p></li>
+<li><p><strong>Séparer les sentiments :</strong> l’AFD va chercher
+spécifiquement les axes qui séparent le mieux les tweets ‘Positive’,
+‘Negative’, ‘Neutral’, ‘Irrelevant’.</p></li>
+</ul>
+</div>
+<div id="modèle-afd" class="section level3" number="4.2">
+<h3><span class="header-section-number">4.2</span> Modèle AFD</h3>
 <p>On vient chercher un relation entre <strong>un Sentiment et toutes
 les autres colonnes (500 mots de vocabulaire).</strong> L’algorithme
 calcule des vecteurs qui maximisent la séparation entre les groupes
@@ -1822,8 +1858,8 @@ séparation.</p>
 <pre class="r"><code>lda_train &lt;- predict(lda_model, data_train_afd)
 lda_test  &lt;- predict(lda_model, data_test_afd)</code></pre>
 </div>
-<div id="la-projection-et-dataframe-de-visualisation" class="section level3" number="4.2">
-<h3><span class="header-section-number">4.2</span> La projection et
+<div id="la-projection-et-dataframe-de-visualisation" class="section level3" number="4.3">
+<h3><span class="header-section-number">4.3</span> La projection et
 dataframe de visualisation</h3>
 <p>On récupère les nouvelles coordonnées de nos tweets. Au lieu d’être
 dans un espace complexe à 1000 dimensions (les mots), chaque tweet est
